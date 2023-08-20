@@ -3,10 +3,14 @@ const bodyParser = require('body-parser');
 const { Router, toAddress, MarketEntity } = require('@pendle/sdk-v2');
 const { ethers } = require("ethers");
 const { config } = require('dotenv');
+const cors = require('cors');
 config();
 require('events').EventEmitter.defaultMaxListeners = 20; // or another number that suits your needs
 
 const app = express();
+// Enable CORS for all routes
+app.use(cors());
+
 const port = 3002;
 const provider = new ethers.providers.JsonRpcProvider(process.env.API_URL);
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);    
@@ -20,15 +24,24 @@ app.get('/', (req, res) => {
   res.send('Welcome to the basic backend service!');
 });
 
-// POST endpoint to accept JSON data
 app.get('/pendle/zapIn', async (req, res) => {
-  const chainId = req.query.chainId;
-  const poolAddress = req.query.poolAddress;
-  const amount = req.query.amount;
-  const slippage = req.query.slippage;
-  const tokenInAddress = req.query.tokenInAddress;
-  const pendleZapInData = await getPendleZapInData(parseInt(chainId, 10), poolAddress, ethers.utils.parseEther(amount), parseFloat(slippage), tokenInAddress)
-  res.json(pendleZapInData);
+  try {
+    const chainId = parseInt(req.query.chainId, 10);
+    const poolAddress = req.query.poolAddress;
+    const amount = req.query.amount;
+    const slippage = parseFloat(req.query.slippage);
+    const tokenInAddress = req.query.tokenInAddress;
+
+    if (isNaN(chainId) || isNaN(slippage) || !ethers.utils.isAddress(poolAddress) || !ethers.utils.isAddress(tokenInAddress) || isNaN(ethers.utils.parseEther(amount))) {
+      throw new Error('Invalid input');
+    }
+
+    const pendleZapInData = await getPendleZapInData(chainId, poolAddress, ethers.utils.parseEther(amount), slippage, tokenInAddress);
+    res.json(pendleZapInData);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: 'Invalid input or an unexpected error occurred.' });
+  }
 });
 
 app.get('/pendle/zapOut', async (req, res) => {
