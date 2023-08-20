@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 });
 
 // POST endpoint to accept JSON data
-app.get('/data', async (req, res) => {
+app.get('/pendle/zapIn', async (req, res) => {
   const pendleZapInData = await getPendleZapInData(42161, "0xa0192f6567f8f5DC38C53323235FD08b318D2dcA", ethers.utils.parseEther("1000"), 0.2, "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1")
   res.send(pendleZapInData);
 });
