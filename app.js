@@ -22,8 +22,23 @@ app.get('/', (req, res) => {
 
 // POST endpoint to accept JSON data
 app.get('/pendle/zapIn', async (req, res) => {
-  const pendleZapInData = await getPendleZapInData(42161, "0xa0192f6567f8f5DC38C53323235FD08b318D2dcA", ethers.utils.parseEther("1000"), 0.2, "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1")
-  res.send(pendleZapInData);
+  const chainId = req.query.chainId;
+  const poolAddress = req.query.poolAddress;
+  const amount = req.query.amount;
+  const slippage = req.query.slippage;
+  const tokenInAddress = req.query.tokenInAddress;
+  const pendleZapInData = await getPendleZapInData(parseInt(chainId, 10), poolAddress, ethers.utils.parseEther(amount), parseFloat(slippage), tokenInAddress)
+  res.json(pendleZapInData);
+});
+
+app.get('/pendle/zapOut', async (req, res) => {
+  const chainId = req.query.chainId;
+  const poolAddress = req.query.poolAddress;
+  const tokenOutAddress = req.query.tokenOutAddress;
+  const amount = req.query.amount;
+  const slippage = req.query.slippage;
+  const pendleZapOutData = await getPendleZapOutData(chainId, poolAddress, tokenOutAddress, amount, slippage)
+  res.json(pendleZapOutData);
 });
 
 // Start the server
