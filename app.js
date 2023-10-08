@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { Router, toAddress, MarketEntity } = require('@pendle/sdk-v2');
+const { Router, toAddress } = require('@pendle/sdk-v2');
 const { ethers } = require("ethers");
 const { config } = require('dotenv');
 const cors = require('cors');
@@ -52,6 +52,19 @@ app.get('/pendle/zapOut', async (req, res) => {
   const slippage = req.query.slippage;
   const pendleZapOutData = await getPendleZapOutData(chainId, poolAddress, tokenOutAddress, amount, slippage)
   res.json(pendleZapOutData);
+});
+
+app.get('/apr/historical-data', async (req, res) => {
+  res.json([
+    {
+      "Date": "2023-10-07",
+      "APR": 15.59
+    },
+    {
+      "Date": "2023-10-08",
+      "APR": 15.37
+    }
+  ]);
 });
 
 // Start the server
