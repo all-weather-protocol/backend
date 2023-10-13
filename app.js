@@ -4,6 +4,7 @@ const { Router, toAddress } = require('@pendle/sdk-v2');
 const { ethers } = require("ethers");
 const { config } = require('dotenv');
 const cors = require('cors');
+const PublicGoogleSheetsParser = require('public-google-sheets-parser')
 config();
 require('events').EventEmitter.defaultMaxListeners = 20; // or another number that suits your needs
 
@@ -55,16 +56,13 @@ app.get('/pendle/zapOut', async (req, res) => {
 });
 
 app.get('/apr/historical-data', async (req, res) => {
-  res.json([
-    {
-      "Date": "2023-10-07",
-      "APR": 15.59
-    },
-    {
-      "Date": "2023-10-08",
-      "APR": 15.37
-    }
-  ]);
+  const spreadsheetId = '1jllj80jGRY8XnioMxfhBcH1wH2nyIinNTg5HYgQQZDo'
+  const parser = new PublicGoogleSheetsParser(spreadsheetId)
+  const data = await parser.parse(spreadsheetId);
+  res.json(data.map((row) => ({
+    ...row,
+    Date: _castStringToDate(row.Date)
+  })));
 });
 
 // Start the server
@@ -90,4 +88,18 @@ async function getPendleZapInData(chainId, poolAddress, amount, slippage, tokenI
     slippage,
     { method: 'extractParams' }
   );
+}
+
+const _castStringToDate = (dateStr) => {
+  const dateMatch = dateStr.match(/\d+/g); // Extract the numeric values
+  if (dateMatch && dateMatch.length === 3) {
+      const year = parseInt(dateMatch[0]);
+      const month = parseInt(dateMatch[1]);
+      const day = parseInt(dateMatch[2]);
+      const date = new Date(year, month - 1, day); // Months are 0-based
+      // Format the Date object as 'YYYY-MM-DD'
+      return date.toISOString().split('T')[0];
+  } else {
+      throw new Error('Invalid date string');
+  }
 }
