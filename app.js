@@ -96,7 +96,7 @@ const _castStringToDate = (dateStr) => {
       const year = parseInt(dateMatch[0]);
       const month = parseInt(dateMatch[1]);
       const day = parseInt(dateMatch[2]);
-      const date = new Date(year, month - 1, day); // Months are 0-based
+      const date = new Date(year, month, day);
       // Format the Date object as 'YYYY-MM-DD'
       return date.toISOString().split('T')[0];
   } else {
