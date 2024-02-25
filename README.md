@@ -21,4 +21,9 @@ Use this backend service to get the hex data needed by frontend
 
 ## Deploy
 
-docker build
+## Deploy
+
+1. Set Up Authentication (only need to do it once): `gcloud auth configure-docker --project allweatherportfolioprotocol; gcloud auth login --project allweatherportfolioprotocol`
+2. Build, Tag and Push Docker image to Google Container Register (GCR): `TAG=x.xx; docker build --platform linux/amd64 -t allweather-protocol-backend:$TAG .; docker tag allweather-protocol-backend:$TAG gcr.io/allweatherportfolioprotocol/allweather-protocol-backend:$TAG; docker push gcr.io/allweatherportfolioprotocol/allweather-protocol-backend:$TAG`
+3. update tag version in Cloud run (portfolio-backend):
+    ![docs](docs/cloudrun.png)
