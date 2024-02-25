@@ -65,6 +65,18 @@ app.get('/apr/historical-data', async (req, res) => {
   })));
 });
 
+app.get('/rewards/historical-data', async (req, res) => {
+  const spreadsheetId = '13oiutsSY1tpE4-pg0Grhk6cz4zpvJzlj2Ix0muOaTm0'
+  const parser = new PublicGoogleSheetsParser(spreadsheetId)
+  const userSheet = req.query.claimableUser;
+  const data = await parser.parse(spreadsheetId, userSheet);
+  const rowOfBundleAddresses = data[1];
+  const key = Object.keys(rowOfBundleAddresses).find(key => key !== 'bundle_addresses');
+  const value = rowOfBundleAddresses[key];
+  const newData = await _transformData(value);
+  res.json(newData)
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
@@ -102,4 +114,14 @@ const _castStringToDate = (dateStr) => {
   } else {
       throw new Error('Invalid date string');
   }
+}
+
+const _transformData = async (dataArray) => {
+  const newArray = JSON.parse(dataArray)
+  return newArray.map(item => {
+    const parts = item.split(',');
+    const date = parts[0];
+    const rewards = parseFloat(parts[1]);
+    return { Date: date, Rewards: rewards };
+  });
 }
