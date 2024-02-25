@@ -70,8 +70,9 @@ app.get('/rewards/historical-data', async (req, res) => {
   const parser = new PublicGoogleSheetsParser(spreadsheetId)
   const userSheet = req.query.claimableUser;
   const data = await parser.parse(spreadsheetId, userSheet);
-  const key = Object.keys(data[1]).find(key => key !== 'bundle_addresses');
-  const value = data[1][key];
+  const rowOfBundleAddresses = data[1];
+  const key = Object.keys(rowOfBundleAddresses).find(key => key !== 'bundle_addresses');
+  const value = rowOfBundleAddresses[key];
   const newData = await _transformData(value);
   res.json(newData)
 });
@@ -118,7 +119,7 @@ const _castStringToDate = (dateStr) => {
 const _transformData = async (dataArray) => {
   const newArray = JSON.parse(dataArray)
   return newArray.map(item => {
-    const parts = item.split(', ');
+    const parts = item.split(',');
     const date = parts[0];
     const rewards = parseFloat(parts[1]);
     return { Date: date, Rewards: rewards };
