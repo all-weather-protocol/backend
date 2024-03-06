@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/storage": "^7.7.0",
     "@pendle/sdk-v2": "^2.6.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",

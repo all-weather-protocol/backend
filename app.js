@@ -5,6 +5,7 @@ const { ethers } = require("ethers");
 const { config } = require('dotenv');
 const cors = require('cors');
 const PublicGoogleSheetsParser = require('public-google-sheets-parser')
+const { Storage } = require('@google-cloud/storage');
 config();
 require('events').EventEmitter.defaultMaxListeners = 20; // or another number that suits your needs
 
@@ -75,6 +76,24 @@ app.get('/rewards/historical-data', async (req, res) => {
   const value = rowOfBundleAddresses[key];
   const newData = await _transformData(value);
   res.json(newData)
+});
+
+app.get('/protocols', async (req, res) => {
+  const storage = new Storage(process.env.GOOGLE_SERVICE);
+  const bucketName = 'all-weather-portfolio';
+  const fileName = 'protocols.json';
+
+  const metadata = await new Promise((resolve, reject) => {
+    storage.bucket(bucketName).file(fileName).download((err, contents) => {
+      if (err) {
+        console.error('Error:', err);
+        reject(err);
+      } else {
+        resolve(contents.toString());
+      }
+    });
+  });
+  res.json(metadata);
 });
 
 // Start the server
