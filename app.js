@@ -79,7 +79,7 @@ app.get('/rewards/historical-data', async (req, res) => {
 });
 
 app.get('/protocols', async (req, res) => {
-  const storage = new Storage(process.env.GOOGLE_SERVICE);
+  const storage = new Storage({keyFilename: process.env.GOOGLE_SERVICE});
   const bucketName = 'all-weather-portfolio';
   const fileName = 'protocols.json';
 
