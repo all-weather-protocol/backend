@@ -14,11 +14,12 @@ async function emailSubscription(req, res) {
   const existingRows = await sheet.getRows(); // can pass in { limit, offset }
   const inputData = req.body;
   if (_checkExistingEmail(inputData, existingRows) === true) {
-    res.json({ status: "exists" });
+    res.status(409).json({ status: "Already Exists!" });
     return;
   }
-  await sheet.addRows(existingRows.concat(inputData));
-  res.json({ status: "success" });
+  console.log(existingRows.concat(inputData));
+  await sheet.addRows([inputData]);
+  res.status(200).json({ status: "Successfully Created!" });
 }
 
 const _checkExistingEmail = (inputData, existingRows) => {
