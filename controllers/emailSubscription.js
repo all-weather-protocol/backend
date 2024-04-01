@@ -1,11 +1,10 @@
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 const { JWT } = require("google-auth-library");
-const { GOOGLE_SERVICE_ACCOUNT } = require("../config");
 async function emailSubscription(req, res) {
   const SPREADSHEET_ID = "1eaLxSs5AvwGuIZXRDl_kIrdEIMrI_kQS8uHFpfCAkCo";
   const serviceAccountAuth = new JWT({
-    email: GOOGLE_SERVICE_ACCOUNT["client_email"],
-    key: GOOGLE_SERVICE_ACCOUNT["private_key"],
+    email: process.env.CLIENT_EMAIL,
+    key: process.env.PRIVATE_KEY,
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
   const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
@@ -17,7 +16,6 @@ async function emailSubscription(req, res) {
     res.status(409).json({ status: "Already Exists!" });
     return;
   }
-  console.log(existingRows.concat(inputData));
   await sheet.addRows([inputData]);
   res.status(200).json({ status: "Successfully Created!" });
 }
