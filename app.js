@@ -6,7 +6,10 @@ const { config } = require("dotenv");
 const cors = require("cors");
 const PublicGoogleSheetsParser = require("public-google-sheets-parser");
 const { Storage } = require("@google-cloud/storage");
-const emailSubscription = require("./controllers/emailSubscription");
+const {
+  emailSubscription,
+  checkEmailSubscriptionStatus,
+} = require("./controllers/emailSubscription");
 config();
 require("events").EventEmitter.defaultMaxListeners = 20; // or another number that suits your needs
 const app = express();
@@ -121,8 +124,23 @@ app.get("/protocols", async (req, res) => {
   res.json(metadata);
 });
 
-app.post("/email_subscription", async (req, res) => {
+app.post("/subscriptions/email", async (req, res) => {
   return await emailSubscription(req, res);
+});
+app.get("/subscriptions", async (req, res) => {
+  // TODO:
+  // 1. need to provide an wallet signature to prove the ownership of the address
+  // 2. need to check if the address is subscribed by payment not email
+
+  // pseudo code:
+  // const signature = req.query.signature;
+  // const address = req.params.address;
+  // validityOfSIgnature = validateSignature(signature, address);
+  // if (!validityOfSIgnature) {
+  //   return res.status(401).json({ error: "Invalid Signature" });
+  // }
+  // await checkPaymentSubscriptionStatus(address);
+  return await checkEmailSubscriptionStatus(req.query.address, res);
 });
 
 // Start the server

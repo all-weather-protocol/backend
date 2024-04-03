@@ -1,7 +1,9 @@
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 const { JWT } = require("google-auth-library");
+const PublicGoogleSheetsParser = require("public-google-sheets-parser");
+
+const SPREADSHEET_ID = "1eaLxSs5AvwGuIZXRDl_kIrdEIMrI_kQS8uHFpfCAkCo";
 async function emailSubscription(req, res) {
-  const SPREADSHEET_ID = "1eaLxSs5AvwGuIZXRDl_kIrdEIMrI_kQS8uHFpfCAkCo";
   const serviceAccountAuth = new JWT({
     email: process.env.CLIENT_EMAIL,
     key: process.env.PRIVATE_KEY,
@@ -13,11 +15,27 @@ async function emailSubscription(req, res) {
   const existingRows = await sheet.getRows(); // can pass in { limit, offset }
   const inputData = req.body;
   if (_checkExistingEmail(inputData, existingRows) === true) {
-    res.status(409).json({ status: "Already Exists!" });
+    res.status(200).json({ status: "Already Exists!" });
     return;
   }
   await sheet.addRows([inputData]);
-  res.status(200).json({ status: "Successfully Created!" });
+  res.status(200).json({ status: "Successfully Created, Happy Earning!" });
+}
+
+async function checkEmailSubscriptionStatus(address, res) {
+  const addressInLowerCase = address.toLowerCase();
+  const parser = new PublicGoogleSheetsParser(SPREADSHEET_ID);
+  const data = await parser.parse();
+  // Find the matching row using filter instead of map with conditional
+  const subscribedRow = data.filter(
+    (row) => row.address.toLowerCase() === addressInLowerCase,
+  )[0];
+
+  if (!subscribedRow) {
+    return res.status(200).json({ subscriptionStatus: false });
+  }
+
+  return res.status(200).json({ subscriptionStatus: true });
 }
 
 const _checkExistingEmail = (inputData, existingRows) => {
@@ -31,4 +49,4 @@ const _checkExistingEmail = (inputData, existingRows) => {
   }
   return false;
 };
-module.exports = emailSubscription;
+module.exports = { emailSubscription, checkEmailSubscriptionStatus };
