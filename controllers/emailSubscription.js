@@ -1,12 +1,12 @@
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 const { JWT } = require("google-auth-library");
 const PublicGoogleSheetsParser = require("public-google-sheets-parser");
-
+const { GOOGLE_SERVICE_ACCOUNT } = require("../config");
 const SPREADSHEET_ID = "1eaLxSs5AvwGuIZXRDl_kIrdEIMrI_kQS8uHFpfCAkCo";
 async function emailSubscription(req, res) {
   const serviceAccountAuth = new JWT({
-    email: process.env.CLIENT_EMAIL,
-    key: process.env.PRIVATE_KEY,
+    email: GOOGLE_SERVICE_ACCOUNT["client_email"],
+    key: GOOGLE_SERVICE_ACCOUNT["private_key"],
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
   const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
