@@ -9,6 +9,10 @@ const {
   emailSubscription,
   checkEmailSubscriptionStatus,
 } = require("./controllers/emailSubscription");
+const {
+  fetchReferralList,
+  createReferrer,
+} = require("./controllers/referralProgram");
 config();
 require("events").EventEmitter.defaultMaxListeners = 20; // or another number that suits your needs
 const app = express();
@@ -90,6 +94,25 @@ app.get("/subscriptions", async (req, res) => {
   // }
   // await checkPaymentSubscriptionStatus(address);
   return await checkEmailSubscriptionStatus(req.query.address, res);
+});
+app.get("/referral/:address/referees", async (req, res) => {
+  const address = req.params.address;
+  if (ethers.utils.isAddress(address) === false) {
+    return res.status(400).json({ error: "Invalid Address", referees: [] });
+  }
+  return await fetchReferralList(address, res);
+});
+
+app.post("/referral/:address/referrer", async (req, res) => {
+  const address = req.params.address;
+  if (ethers.utils.isAddress(address) === false) {
+    return res.status(400).json({ error: "Invalid Address" });
+  } else if (req.body.referrer.toLowerCase() === address.toLowerCase()) {
+    return res
+      .status(400)
+      .json({ error: "Referrer and Referee cannot be the same" });
+  }
+  return await createReferrer(address, req.body.referrer, res);
 });
 
 // Start the server
