@@ -30,9 +30,14 @@ app.get("/", (req, res) => {
   res.send("Welcome to the basic backend service!");
 });
 
-app.get("/apr/historical-data", async (req, res) => {
+app.get("/apr/:portfolioName/historical-data", async (req, res) => {
+  const portfolioName = req.params.portfolioName;
+  console.log("portfolioName", portfolioName);
+
   const spreadsheetId = "1iLrdDwXG3VBNGcFlGuCxDhXs8L2lTZCj3spYRdAeEyE";
-  const parser = new PublicGoogleSheetsParser(spreadsheetId);
+  const parser = new PublicGoogleSheetsParser(spreadsheetId, {
+    sheetName: portfolioName,
+  });
   const data = await parser.parse(spreadsheetId);
   res.json(
     data.map((row) => ({

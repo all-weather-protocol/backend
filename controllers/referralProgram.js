@@ -15,12 +15,10 @@ async function createReferrer(address, referrer, res) {
   const sheet = doc.sheetsByTitle["Sheet1"];
   const existingRows = await sheet.getRows(); // can pass in { limit, offset }
   if (_checkExistingReferee(address, referrer, existingRows) === true) {
-    res
-      .status(400)
-      .json({
-        status:
-          "Referrer Already Exists! Or Your referrer cannot be referred by you",
-      });
+    res.status(400).json({
+      status:
+        "Referrer Already Exists! Or Your referrer cannot be referred by you",
+    });
     return;
   }
   await sheet.addRows([{ referrer, referee: address }]);
