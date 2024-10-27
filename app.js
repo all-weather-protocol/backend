@@ -32,7 +32,6 @@ app.get("/", (req, res) => {
 
 app.get("/apr/:portfolioName/historical-data", async (req, res) => {
   const portfolioName = req.params.portfolioName;
-  console.log("portfolioName", portfolioName);
 
   const spreadsheetId = "1iLrdDwXG3VBNGcFlGuCxDhXs8L2lTZCj3spYRdAeEyE";
   const parser = new PublicGoogleSheetsParser(spreadsheetId, {
