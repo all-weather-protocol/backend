@@ -13,6 +13,11 @@ const {
   fetchReferralList,
   createReferrer,
 } = require("./controllers/referralProgram");
+const {
+  fetchBalancesHistory,
+  insertBalance,
+} = require("./controllers/userBalances");
+const { castStringToDate } = require("./utils");
 config();
 require("events").EventEmitter.defaultMaxListeners = 20; // or another number that suits your needs
 const app = express();
@@ -41,7 +46,7 @@ app.get("/apr/:portfolioName/historical-data", async (req, res) => {
   res.json(
     data.map((row) => ({
       ...row,
-      Date: _castStringToDate(row.Date),
+      Date: castStringToDate(row.Date),
     })),
   );
 });
@@ -119,24 +124,26 @@ app.post("/referral/:address/referrer", async (req, res) => {
   return await createReferrer(address, req.body.referrer, res);
 });
 
+app.get("/balances/:address/history", async (req, res) => {
+  const address = req.params.address;
+  if (ethers.utils.isAddress(address) === false) {
+    return res.status(400).json({ error: "Invalid Address", history: [] });
+  }
+  return await fetchBalancesHistory(address, res);
+});
+
+app.post("/balances/:address", async (req, res) => {
+  const address = req.params.address;
+  if (ethers.utils.isAddress(address) === false) {
+    return res.status(400).json({ error: "Invalid Address" });
+  }
+  return await insertBalance(address, res);
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
-
-const _castStringToDate = (dateStr) => {
-  const dateMatch = dateStr.match(/\d+/g); // Extract the numeric values
-  if (dateMatch && dateMatch.length === 3) {
-    const year = parseInt(dateMatch[0]);
-    const month = parseInt(dateMatch[1]);
-    const day = parseInt(dateMatch[2]);
-    const date = new Date(year, month, day);
-    // Format the Date object as 'YYYY-MM-DD'
-    return date.toISOString().split("T")[0];
-  } else {
-    throw new Error("Invalid date string");
-  }
-};
 
 const _transformData = async (dataArray) => {
   const newArray = JSON.parse(dataArray);
