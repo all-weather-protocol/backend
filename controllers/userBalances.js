@@ -4,7 +4,7 @@ const PublicGoogleSheetsParser = require("public-google-sheets-parser");
 const { GOOGLE_SERVICE_ACCOUNT } = require("../config");
 const SPREADSHEET_ID = "1ccCvnPfN-COcIpljie65dQddFP5HCsdJV66YnZdZ-2o";
 const { castStringToDate } = require("../utils");
-
+const fetch = require("node-fetch");
 async function insertBalance(address, res) {
   const serviceAccountAuth = new JWT({
     email: GOOGLE_SERVICE_ACCOUNT["client_email"],
@@ -14,9 +14,6 @@ async function insertBalance(address, res) {
   const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
   await doc.loadInfo(); // loads document properties and worksheets
   const sheet = doc.sheetsByTitle["Sheet1"];
-  console.log(
-    `https://pro-openapi.debank.com/v1/user/chain_balance?id=${address}&chain_id=arb`,
-  );
   const resp = await fetch(
     `https://pro-openapi.debank.com/v1/user/chain_balance?id=${address}&chain_id=arb`,
     {
