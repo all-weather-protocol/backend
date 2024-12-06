@@ -15,7 +15,7 @@ async function insertBalance(address, res) {
   await doc.loadInfo(); // loads document properties and worksheets
   const sheet = doc.sheetsByTitle["Sheet1"];
   const resp = await fetch(
-    `https://pro-openapi.debank.com/v1/user/chain_balance?id=${address}&chain_id=arb`,
+    `https://pro-openapi.debank.com/v1/user/total_balance?id=${address}`,
     {
       method: "GET", // Optional, for explicitness
       headers: {
@@ -25,7 +25,7 @@ async function insertBalance(address, res) {
     },
   );
   const data = await resp.json();
-  const usd_value = data && data.usd_value ? data.usd_value : 0;
+  const usd_value = data && data.total_usd_value ? data.total_usd_value : 0;
   const today = new Date();
   const formattedDate = `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`;
   await sheet.addRows([
