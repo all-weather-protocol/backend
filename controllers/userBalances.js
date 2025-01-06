@@ -33,7 +33,6 @@ async function insertBalance(address, res) {
       address,
       usd_value,
       date: formattedDate,
-      chain: "arb",
     },
   ]);
   res.status(200).json({ success: true });
