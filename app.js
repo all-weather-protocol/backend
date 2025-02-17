@@ -140,6 +140,34 @@ app.post("/balances/:address", async (req, res) => {
   return await insertBalance(address, res);
 });
 
+app.post("/discord/webhook", async (req, res) => {
+  try {
+    const errorMsg = req.body.errorMsg;
+    if (!errorMsg) {
+      return res.status(400).json({ error: "Error message is required" });
+    }
+
+    const response = await fetch(process.env.DISCORD_WEBHOOK, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        content: errorMsg
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Discord webhook failed: ${response.statusText}`);
+    }
+
+    res.status(200).json({ message: "Error notification sent to Discord" });
+  } catch (error) {
+    console.error('Discord webhook error:', error);
+    res.status(500).json({ error: "Failed to send notification to Discord" });
+  }
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
