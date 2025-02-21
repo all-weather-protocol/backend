@@ -18,13 +18,14 @@ const {
   insertBalance,
 } = require("./controllers/userBalances");
 const { castStringToDate } = require("./utils");
+const { sendPnLReport } = require("./controllers/reportSender");
 config();
 require("events").EventEmitter.defaultMaxListeners = 20; // or another number that suits your needs
 const app = express();
 // Enable CORS for all routes
 app.use(cors());
 
-const port = 3002;
+const port = 3002;;
 
 // Middleware to parse JSON requests
 app.use(bodyParser.json());
@@ -148,13 +149,13 @@ app.post("/discord/webhook", async (req, res) => {
     }
 
     const response = await fetch(process.env.DISCORD_WEBHOOK, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        content: errorMsg
-      })
+        content: errorMsg,
+      }),
     });
 
     if (!response.ok) {
@@ -163,11 +164,13 @@ app.post("/discord/webhook", async (req, res) => {
 
     res.status(200).json({ message: "Error notification sent to Discord" });
   } catch (error) {
-    console.error('Discord webhook error:', error);
+    console.error("Discord webhook error:", error);
     res.status(500).json({ error: "Failed to send notification to Discord" });
   }
 });
-
+app.post("/reports/weekly-pnl", async (req, res) => {
+  return await sendPnLReport(req, res);
+});
 // Start the server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
