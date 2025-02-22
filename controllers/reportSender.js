@@ -24,13 +24,22 @@ async function sendPnLReport(req, res) {
       return res.status(404).json({ error: "No data found for this address" });
     }
 
-    // Sort by date (assuming date is in the third column)
+    // Sort by date in descending order (newest first)
     const sortedRows = addressRows.sort((a, b) => {
-      const dateA = new Date(Object.values(a)[2]);
-      const dateB = new Date(Object.values(b)[2]);
-      return dateB - dateA;
-    });
+      // Extract date components from strings like "Date(2025,0,16)"
+      const extractDate = (dateStr) => {
+        const [year, month, day] = dateStr
+          .replace('Date(', '')
+          .replace(')', '')
+          .split(',')
+          .map(Number);
+        return new Date(year, month, day);
+      };
 
+      const dateAObj = extractDate(a.date);
+      const dateBObj = extractDate(b.date);
+      return dateBObj.getTime() - dateAObj.getTime();
+    });
     // Get latest balance (first row after sorting)
     const currentBalance = parseFloat(Object.values(sortedRows[0])[1]);
 
@@ -115,9 +124,17 @@ async function sendPnLReport(req, res) {
     };
 
     // Send email
-    await promisify(transporter.sendMail.bind(transporter))(emailContent);
+    try {
+      await promisify(transporter.sendMail.bind(transporter))(emailContent);
+    } catch (emailError) {
+      console.error("Email sending error:", emailError);
+      return res.status(500).json({
+        error: "Failed to send email",
+        details: emailError.message
+      });
+    }
 
-    res.json({
+    res.status(200).json({
       message: "PnL report has been sent to your email",
       data: result,
     });
