@@ -29,9 +29,9 @@ async function sendPnLReport(req, res) {
       // Extract date components from strings like "Date(2025,0,16)"
       const extractDate = (dateStr) => {
         const [year, month, day] = dateStr
-          .replace('Date(', '')
-          .replace(')', '')
-          .split(',')
+          .replace("Date(", "")
+          .replace(")", "")
+          .split(",")
           .map(Number);
         return new Date(year, month, day);
       };
@@ -118,6 +118,12 @@ async function sendPnLReport(req, res) {
 
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px; text-align: center;">
             <p>⚠️ Security Notice: We'll never ask for your private key or password.</p>
+            <p style="margin-top: 10px;">
+              <a href="https://app.awp-capital.com/unsubscribe?email=${encodeURIComponent(email)}&address=${encodeURIComponent(address)}" 
+                 style="color: #666; text-decoration: underline;">
+                Unsubscribe from these reports
+              </a>
+            </p>
           </div>
         </div>
       `,
@@ -130,7 +136,7 @@ async function sendPnLReport(req, res) {
       console.error("Email sending error:", emailError);
       return res.status(500).json({
         error: "Failed to send email",
-        details: emailError.message
+        details: emailError.message,
       });
     }
 

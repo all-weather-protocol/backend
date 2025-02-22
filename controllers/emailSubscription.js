@@ -19,7 +19,7 @@ async function emailSubscription(req, res) {
     return;
   }
   await sheet.addRows([inputData]);
-  res.status(200).json({ status: "Successfully Created, Happy Earning!" });
+  res.status(200).json({ status: "Successfully Subscribed, Happy Earning!" });
 }
 
 async function checkEmailSubscriptionStatus(address, res) {
@@ -49,4 +49,39 @@ const _checkExistingEmail = (inputData, existingRows) => {
   }
   return false;
 };
-module.exports = { emailSubscription, checkEmailSubscriptionStatus };
+
+async function unsubscribeEmail(req, res) {
+  const serviceAccountAuth = new JWT({
+    email: GOOGLE_SERVICE_ACCOUNT["client_email"],
+    key: GOOGLE_SERVICE_ACCOUNT["private_key"],
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+  const doc = new GoogleSpreadsheet(SPREADSHEET_ID, serviceAccountAuth);
+  await doc.loadInfo();
+  const sheet = doc.sheetsByTitle["emails"];
+  const existingRows = await sheet.getRows();
+
+  const inputData = req.body;
+  // Find the row with matching email and address
+  const rowToUpdate = existingRows.find(
+    (row) =>
+      row.get("email") === inputData.email &&
+      row.get("address") === inputData.address,
+  );
+
+  if (!rowToUpdate) {
+    return res.status(404).json({ status: "Email subscription not found" });
+  }
+
+  // Update the subscription status to false
+  rowToUpdate.set("subscription", false);
+  await rowToUpdate.save();
+
+  return res.status(200).json({ status: "Successfully unsubscribed" });
+}
+
+module.exports = {
+  emailSubscription,
+  checkEmailSubscriptionStatus,
+  unsubscribeEmail,
+};

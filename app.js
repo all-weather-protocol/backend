@@ -8,6 +8,7 @@ const { Storage } = require("@google-cloud/storage");
 const {
   emailSubscription,
   checkEmailSubscriptionStatus,
+  unsubscribeEmail,
 } = require("./controllers/emailSubscription");
 const {
   fetchReferralList,
@@ -25,7 +26,7 @@ const app = express();
 // Enable CORS for all routes
 app.use(cors());
 
-const port = 3002;;
+const port = 3002;
 
 // Middleware to parse JSON requests
 app.use(bodyParser.json());
@@ -104,6 +105,9 @@ app.get("/subscriptions", async (req, res) => {
   // }
   // await checkPaymentSubscriptionStatus(address);
   return await checkEmailSubscriptionStatus(req.query.address, res);
+});
+app.put("/subscriptions/email", async (req, res) => {
+  return await unsubscribeEmail(req, res);
 });
 app.get("/referral/:address/referees", async (req, res) => {
   const address = req.params.address;
