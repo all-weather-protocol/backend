@@ -52,7 +52,6 @@ async function fetchBalancesHistory(address, res) {
     const addressInLowerCase = address.toLowerCase();
     const parser = new PublicGoogleSheetsParser(SPREADSHEET_ID);
     const data = await parser.parse();
-    console.log(" fetchBalancesHistory data", data);
     // Find the matching row using filter instead of map with conditional
     const userRows = data
       .filter((row) => row.address.toLowerCase() === addressInLowerCase)
