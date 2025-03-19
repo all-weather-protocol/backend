@@ -153,36 +153,6 @@ class EmailConfig {
   }
 }
 
-const generateEmailFooter = (address, email) => {
-  return `
-    <div style="text-align: center; margin: 20px 0;">
-      <p style="color: #666; margin-bottom: 10px;">View your detailed performance analysis:</p>
-      <a href="https://app.awp-capital.com/profile/?address=${address}" 
-         style="background-color: #3b82f6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
-        View Dashboard
-      </a>
-    </div>
-
-    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px; text-align: center;">
-      <p>This is an automated report for your All Weather Protocol account. If you didn't request this, you can safely ignore it.</p>
-      <p style="margin: 10px 0;">Contact us at support@awp-capital.com if you have any questions.</p>
-      <p>
-        <a href="https://app.awp-capital.com/unsubscribe?email=${encodeURIComponent(email)}&address=${encodeURIComponent(address)}" 
-           style="color: #666;">
-          Unsubscribe
-        </a>
-      </p>
-      
-      <div style="margin-top: 20px; text-align: center;">
-        <p style="color: #666; margin-bottom: 10px;">Follow us:</p>
-        <a href="https://twitter.com/all_weather_p" style="color: #666; text-decoration: none; margin: 0 10px;" target="_blank">Twitter</a>
-        <a href="https://discord.gg/sNsMmtsCCV" style="color: #666; text-decoration: none; margin: 0 10px;" target="_blank">Discord</a>
-        <a href="https://all-weather-protocol.gitbook.io/" style="color: #666; text-decoration: none; margin: 0 10px;" target="_blank">Documentation</a>
-      </div>
-    </div>
-  `;
-};
-
 class ReportController {
   static async validateInput(req) {
     const { address, email } = req.body;
@@ -263,9 +233,17 @@ class ReportController {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h2 style="color: #333; text-align: center; padding-bottom: 10px;">Your Weekly Performance Report</h2>
         
-        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
-          <p style="color: #666; margin: 5px 0;">Address:</p>
-          <p style="word-break: break-all; margin: 5px 0;">${address}</p>
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px;">
+            <p style="color: #666; margin: 5px 0;">Address:</p>
+            <p style="word-break: break-all; margin: 5px 0;">${address.substring(0, 6)}...${address.substring(address.length - 4)}</p>
+          </div>
+          <div style="margin: 10px 0; text-align: right;">
+            <a href="https://app.awp-capital.com/profile/?address=${address}" 
+               style="background-color: #3b82f6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+              View Dashboard
+            </a>
+          </div>
         </div>
     
         <!-- Balance Chart -->
@@ -295,14 +273,6 @@ class ReportController {
               (${weeklyPnLPercentage >= 0 ? "+" : ""}${weeklyPnLPercentage.toFixed(2)}%)
             </span>
           </h1>
-        </div>
-
-        <div style="text-align: center; margin: 20px 0;">
-          <p style="color: #666; margin-bottom: 10px;">View your detailed performance analysis:</p>
-          <a href="https://app.awp-capital.com/profile/?address=${address}" 
-             style="background-color: #3b82f6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
-            View Dashboard
-          </a>
         </div>
 
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px; text-align: center;">
