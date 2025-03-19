@@ -1,6 +1,8 @@
 const nodemailer = require("nodemailer");
 const { promisify } = require("util");
 const PublicGoogleSheetsParser = require("public-google-sheets-parser");
+const ChartGenerator = require("../utils/ChartGenerator");
+const fs = require("fs");
 
 // Date utilities
 class DateUtils {
@@ -87,10 +89,10 @@ class PerformanceCalculator {
       this.calculateWeeklyMetrics(),
       this.calculateMonthlyMetrics(),
     ]);
-
     return {
       ...weeklyMetrics,
       ...monthlyMetrics,
+      balanceHistory: this.sortedRows,
     };
   }
 
@@ -150,44 +152,6 @@ class EmailConfig {
     });
   }
 }
-
-const generateEmailHTML = (address, result, email) => {
-  return `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <h2 style="color: #333; text-align: center; padding-bottom: 10px;">Your Weekly Performance Report</h2>
-      
-      <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
-        <p style="color: #666; margin: 5px 0;">Address:</p>
-        <p style="word-break: break-all; margin: 5px 0;">${address}</p>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
-        <div style="text-align: center; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
-          <p style="color: #666; margin: 5px 0;">Current Balance</p>
-          <p style="font-size: 18px; font-weight: bold; margin: 5px 0;">$${result.currentBalance.toFixed(2)}</p>
-        </div>
-        <div style="text-align: center; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
-          <p style="color: #666; margin: 5px 0;">Last Week's Balance</p>
-          <p style="font-size: 18px; font-weight: bold; margin: 5px 0;">$${result.lastWeekBalance.toFixed(2)}</p>
-        </div>
-      </div>
-
-      <div style="text-align: center; padding: 20px; margin: 20px 0; background-color: #f8f9fa; border-radius: 5px;">
-        <p style="color: #666; margin: 5px 0;">Weekly PnL</p>
-        <h1 style="font-size: 32px; margin: 10px 0; color: ${result.weeklyPnL >= 0 ? "#22c55e" : "#ef4444"};">
-          ${result.weeklyPnL >= 0 ? "+" : ""}$${result.weeklyPnL.toFixed(2)}
-        </h1>
-        <p style="color: #666; margin: 5px 0;">Annualized ROI</p>
-        <p style="color: #666; font-size: 12px; margin: 5px 0;">(Based on performance over the last ${result.daysDiff} days, projected to 365 days)</p>
-        <h1 style="font-size: 32px; margin: 10px 0; color: ${result.annualROI >= 0 ? "#22c55e" : "#ef4444"};">
-          ${result.annualROI >= 0 ? "+" : ""}${result.annualROI.toFixed(2)}%
-        </h1>
-      </div>
-
-      ${generateEmailFooter(address, email)}
-    </div>
-  `;
-};
 
 const generateEmailFooter = (address, email) => {
   return `
@@ -249,18 +213,117 @@ class ReportController {
 
   static async sendEmail(email, address, metrics) {
     const transporter = EmailConfig.createTransporter();
-    const emailContent = {
-      from: `"All Weather Protocol" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "Your Weekly PnL Report",
-      html: generateEmailHTML(address, metrics, email),
-    };
 
     try {
+      // Generate charts
+      const balanceChart = await ChartGenerator.generateHistoricalBalanceChart(
+        metrics.balanceHistory,
+        address,
+      );
+
+      const emailContent = {
+        from: `"All Weather Protocol" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: "Your Weekly PnL Report",
+        html: this.generateEmailHTML(
+          address,
+          metrics,
+          email,
+          balanceChart.contentId,
+        ),
+        attachments: [
+          {
+            filename: balanceChart.fileName,
+            content: balanceChart.buffer,
+            cid: balanceChart.contentId,
+          },
+        ],
+      };
+
       await promisify(transporter.sendMail.bind(transporter))(emailContent);
+
+      // Clean up temp files
+      if (balanceChart?.filePath && fs.existsSync(balanceChart.filePath)) {
+        fs.unlinkSync(balanceChart.filePath);
+      }
     } catch (error) {
+      console.error("Email sending error:", error);
       throw new Error(`Failed to send email: ${error.message}`);
     }
+  }
+
+  static generateEmailHTML(address, metrics, email, balanceChartCid) {
+    // Calculate the weekly PnL percentage correctly
+    const weeklyPnLPercentage =
+      metrics.lastWeekBalance > 0
+        ? (metrics.weeklyPnL / metrics.lastWeekBalance) * 100
+        : 0;
+
+    return `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #333; text-align: center; padding-bottom: 10px;">Your Weekly Performance Report</h2>
+        
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
+          <p style="color: #666; margin: 5px 0;">Address:</p>
+          <p style="word-break: break-all; margin: 5px 0;">${address}</p>
+        </div>
+    
+        <!-- Balance Chart -->
+        <div style="margin-bottom: 30px;">
+          <h3 style="color: #333; text-align: center;">Portfolio Balance</h3>
+          <div style="text-align: center;">
+            <img src="cid:${balanceChartCid}" alt="Historical Balance Chart" style="max-width: 100%; height: auto; border-radius: 5px;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+          <div style="text-align: center; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+            <p style="color: #666; margin: 5px 0;">Current Balance</p>
+            <p style="font-size: 18px; font-weight: bold; margin: 5px 0;">$${metrics.currentBalance?.toFixed(2)}</p>
+          </div>
+          <div style="text-align: center; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+            <p style="color: #666; margin: 5px 0;">Last Week's Balance</p>
+            <p style="font-size: 18px; font-weight: bold; margin: 5px 0;">$${metrics.lastWeekBalance?.toFixed(2)}</p>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding: 20px; margin: 20px 0; background-color: #f8f9fa; border-radius: 5px;">
+          <p style="color: #666; margin: 5px 0;">Weekly PnL</p>
+          <h1 style="font-size: 32px; margin: 10px 0; color: ${metrics.weeklyPnL >= 0 ? "#22c55e" : "#ef4444"};">
+            ${metrics.weeklyPnL >= 0 ? "+" : ""}$${metrics.weeklyPnL?.toFixed(2)}
+            <span style="font-size: 18px;">
+              (${weeklyPnLPercentage >= 0 ? "+" : ""}${weeklyPnLPercentage.toFixed(2)}%)
+            </span>
+          </h1>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+          <p style="color: #666; margin-bottom: 10px;">View your detailed performance analysis:</p>
+          <a href="https://app.awp-capital.com/profile/?address=${address}" 
+             style="background-color: #3b82f6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            View Dashboard
+          </a>
+        </div>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px; text-align: center;">
+          <p>This is an automated report for your All Weather Protocol account. If you didn't request this, you can safely ignore it.</p>
+          <p style="margin: 10px 0;">Contact us at support@awp-capital.com if you have any questions.</p>
+          <p>
+            <a href="https://app.awp-capital.com/unsubscribe?email=${encodeURIComponent(email)}&address=${encodeURIComponent(address)}" 
+               style="color: #666;">
+              Unsubscribe
+            </a>
+          </p>
+          
+          <div style="margin-top: 20px; text-align: center;">
+            <p style="color: #666; margin-bottom: 10px;">Follow us:</p>
+            <a href="https://twitter.com/all_weather_p" style="color: #666; text-decoration: none; margin: 0 10px;" target="_blank">Twitter</a>
+            <a href="https://discord.gg/sNsMmtsCCV" style="color: #666; text-decoration: none; margin: 0 10px;" target="_blank">Discord</a>
+            <a href="https://all-weather-protocol.gitbook.io/" style="color: #666; text-decoration: none; margin: 0 10px;" target="_blank">Documentation</a>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   static async handleError(error, res) {
@@ -307,7 +370,6 @@ class ReportController {
       const metrics = await new PerformanceCalculator(
         sortedRows,
       ).calculateMetrics();
-
       // Send email
       await this.sendEmail(email, address, metrics);
 
