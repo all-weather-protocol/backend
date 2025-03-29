@@ -20,6 +20,7 @@ const {
 } = require("./controllers/userBalances");
 const { castStringToDate } = require("./utils");
 const { sendPnLReport } = require("./controllers/reportSender");
+
 config();
 require("events").EventEmitter.defaultMaxListeners = 20; // or another number that suits your needs
 const app = express();
@@ -143,6 +144,11 @@ app.post("/balances/:address", async (req, res) => {
   }
   return await insertBalance(address, res);
 });
+
+let fetch;
+(async () => {
+  fetch = (await import('node-fetch')).default;
+})();
 
 app.post("/discord/webhook", async (req, res) => {
   try {
