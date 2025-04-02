@@ -18,9 +18,12 @@ const {
   fetchBalancesHistory,
   insertBalance,
 } = require("./controllers/userBalances");
-const { castStringToDate } = require("./utils");
+const { castStringToDate } = require("./utils/general");
 const { sendPnLReport } = require("./controllers/reportSender");
-
+const {
+  generateIntentTxns,
+} = require("./controllers/intent/generateIntentTxns");
+const { getPortfolioHelper } = require("./controllers/intent/portfolioHelper");
 config();
 require("events").EventEmitter.defaultMaxListeners = 20; // or another number that suits your needs
 const app = express();
@@ -147,7 +150,7 @@ app.post("/balances/:address", async (req, res) => {
 
 let fetch;
 (async () => {
-  fetch = (await import('node-fetch')).default;
+  fetch = (await import("node-fetch")).default;
 })();
 
 app.post("/discord/webhook", async (req, res) => {
@@ -179,6 +182,53 @@ app.post("/discord/webhook", async (req, res) => {
 });
 app.post("/reports/weekly-pnl", async (req, res) => {
   return await sendPnLReport(req, res);
+});
+app.get("/generate-intent-txns", async (req, res) => {
+  // check test.py for the params
+  const actionName = req.query.actionName;
+  const chainMetadata = req.query.chainMetadata;
+  const portfolioName = req.query.portfolioName;
+  const portfolioHelper = getPortfolioHelper(portfolioName);
+  const accountAddress = req.query.accountAddress;
+  const tokenSymbol = req.query.tokenSymbol;
+  const tokenAddress = req.query.tokenAddress;
+  const investmentAmount = req.query.investmentAmount;
+  const tokenDecimals = req.query.tokenDecimals;
+  const zapOutPercentage = req.query.zapOutPercentage;
+  const setTradingLoss = req.query.setTradingLoss;
+  const setStepName = req.query.setStepName;
+  const setTotalTradingLoss = req.query.setTotalTradingLoss;
+  const setPlatformFee = req.query.setPlatformFee;
+  const slippage = req.query.slippage;
+  // const rebalancableUsdBalanceDict = req.rebalancableUsdBalanceDict
+  const rebalancableUsdBalanceDict = {};
+  const recipient = req.query.recipient;
+  // const protocolAssetDustInWallet = req.protocolAssetDustInWallet
+  const protocolAssetDustInWallet = {};
+  const onlyThisChain = req.query.onlyThisChain;
+  const usdBalance = req.query.usdBalance;
+  const txns = await generateIntentTxns(
+    actionName,
+    chainMetadata,
+    portfolioHelper,
+    accountAddress,
+    tokenSymbol,
+    tokenAddress,
+    investmentAmount,
+    tokenDecimals,
+    zapOutPercentage,
+    setTradingLoss,
+    setStepName,
+    setTotalTradingLoss,
+    setPlatformFee,
+    slippage,
+    rebalancableUsdBalanceDict,
+    recipient,
+    protocolAssetDustInWallet,
+    onlyThisChain,
+    usdBalance,
+  );
+  res.json(txns);
 });
 // Start the server
 app.listen(port, () => {
