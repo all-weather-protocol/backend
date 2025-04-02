@@ -1,6 +1,8 @@
-import { readFileSync } from 'fs';
-const Vault = JSON.parse(readFileSync('./utils/ABI/Aura/Vault.json', 'utf8'));
-const BoosterLite = JSON.parse(readFileSync('./utils/ABI/Aura/BoosterLite.json', 'utf8'));
+import { readFileSync } from "fs";
+const Vault = JSON.parse(readFileSync("./utils/ABI/Aura/Vault.json", "utf8"));
+const BoosterLite = JSON.parse(
+  readFileSync("./utils/ABI/Aura/BoosterLite.json", "utf8"),
+);
 import axios from "axios";
 import { ethers } from "ethers";
 import { PROVIDER } from "../../../../utils/general.js";
@@ -9,8 +11,10 @@ import { getContract, prepareContractCall } from "thirdweb";
 import THIRDWEB_CLIENT from "../../../../utils/thirdweb.js";
 import BaseProtocol from "../BaseProtocol.js";
 import { approve, CHAIN_ID_TO_CHAIN } from "../../../../utils/general.js";
-const ERC20_ABI = JSON.parse(readFileSync('./utils/ABI/ERC20.json', 'utf8'));
-const BaseRewardPool4626 = JSON.parse(readFileSync('./utils/ABI/Aura/BaseRewardPool4626.json', 'utf8'));
+const ERC20_ABI = JSON.parse(readFileSync("./utils/ABI/ERC20.json", "utf8"));
+const BaseRewardPool4626 = JSON.parse(
+  readFileSync("./utils/ABI/Aura/BaseRewardPool4626.json", "utf8"),
+);
 import {
   AddLiquidityKind,
   AddLiquidity,

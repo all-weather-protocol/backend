@@ -1,7 +1,13 @@
-import { readFileSync } from 'fs';
-const CurveStableSwapNG = JSON.parse(readFileSync('./utils/ABI/Curve/CurveStableSwapNG.json', 'utf8'));
-const Booster = JSON.parse(readFileSync('./utils/ABI/Convex/Booster.json', 'utf8'));
-const ConvexRewardPool = JSON.parse(readFileSync('./utils/ABI/Convex/ConvexRewardPool.json', 'utf8'));
+import { readFileSync } from "fs";
+const CurveStableSwapNG = JSON.parse(
+  readFileSync("./utils/ABI/Curve/CurveStableSwapNG.json", "utf8"),
+);
+const Booster = JSON.parse(
+  readFileSync("./utils/ABI/Convex/Booster.json", "utf8"),
+);
+const ConvexRewardPool = JSON.parse(
+  readFileSync("./utils/ABI/Convex/ConvexRewardPool.json", "utf8"),
+);
 import { CHAIN_ID_TO_CHAIN } from "../../../../utils/general.js";
 
 import axios from "axios";
@@ -12,7 +18,7 @@ import { getContract, prepareContractCall } from "thirdweb";
 import THIRDWEB_CLIENT from "../../../../utils/thirdweb.js";
 import BaseProtocol from "../BaseProtocol.js";
 import { approve } from "../../../../utils/general.js";
-const ERC20_ABI = JSON.parse(readFileSync('./utils/ABI/ERC20.json', 'utf8'));
+const ERC20_ABI = JSON.parse(readFileSync("./utils/ABI/ERC20.json", "utf8"));
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
 export class BaseConvex extends BaseProtocol {
   constructor(chain, chaindId, symbolList, mode, customParams) {

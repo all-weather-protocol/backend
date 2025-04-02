@@ -152,7 +152,7 @@ async function swap(
       bestSwap.normalizedOutputAmount * tokenPricesMappingTable[toTokenSymbol]
     })`,
     "bestSwap",
-    bestSwap,
+    bestSwap.provider,
   );
   if (process.env.TEST !== "true") {
     assert(

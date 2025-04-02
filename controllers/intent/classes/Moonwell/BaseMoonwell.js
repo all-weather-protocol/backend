@@ -1,7 +1,13 @@
-import { readFileSync } from 'fs';
-const MErc20Delegate = JSON.parse(readFileSync('./utils/ABI/Moonwell/MErc20Delegate.json', 'utf8'));
-const MultiRewardDistributor = JSON.parse(readFileSync('./utils/ABI/Moonwell/MultiRewardDistributor.json', 'utf8'));
-const Comptroller = JSON.parse(readFileSync('./utils/ABI/Moonwell/Comptroller.json', 'utf8'));
+import { readFileSync } from "fs";
+const MErc20Delegate = JSON.parse(
+  readFileSync("./utils/ABI/Moonwell/MErc20Delegate.json", "utf8"),
+);
+const MultiRewardDistributor = JSON.parse(
+  readFileSync("./utils/ABI/Moonwell/MultiRewardDistributor.json", "utf8"),
+);
+const Comptroller = JSON.parse(
+  readFileSync("./utils/ABI/Moonwell/Comptroller.json", "utf8"),
+);
 import axios from "axios";
 import { ethers } from "ethers";
 import { PROVIDER } from "../../../../utils/general.js";

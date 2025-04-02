@@ -23,7 +23,7 @@ export const generateIntentTxns = async (
   onlyThisChain,
   usdBalance,
 ) => {
-  let txns;
+  let txns = [];
   if (actionName === "zapIn") {
     txns = await portfolioHelper.portfolioAction("zapIn", {
       account: accountAddress,
@@ -118,5 +118,8 @@ export const generateIntentTxns = async (
       onlyThisChain,
     });
   }
-  return txns.map(txn => encode(txn));
+  return await Promise.all(txns.map(async (txn) => ({
+    to: txn.to,
+    data: await encode(txn)
+  })));
 };

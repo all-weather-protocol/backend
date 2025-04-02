@@ -1,11 +1,25 @@
-import { readFileSync } from 'fs';
-const PendleMarketV3 = JSON.parse(readFileSync('./utils/ABI/Pendle/PendleMarketV3.json', 'utf8'));
-const ActionAddRemoveLiqV3 = JSON.parse(readFileSync('./utils/ABI/Pendle/ActionAddRemoveLiqV3.json', 'utf8'));
-const PendleBoosterSidechain = JSON.parse(readFileSync('./utils/ABI/Pendle/PendleBoosterSidechain.json', 'utf8'));
-const EqbMinterSidechain = JSON.parse(readFileSync('./utils/ABI/Pendle/EqbMinterSidechain.json', 'utf8'));
-const BaseRewardPool = JSON.parse(readFileSync('./utils/ABI/Pendle/BaseRewardPool.json', 'utf8'));
-const XEqbToken = JSON.parse(readFileSync('./utils/ABI/Equilibria/XEqbToken.json', 'utf8'));
-const EqbZap = JSON.parse(readFileSync('./utils/ABI/Equilibria/EqbZap.json', 'utf8'));
+import { readFileSync } from "fs";
+const PendleMarketV3 = JSON.parse(
+  readFileSync("./utils/ABI/Pendle/PendleMarketV3.json", "utf8"),
+);
+const ActionAddRemoveLiqV3 = JSON.parse(
+  readFileSync("./utils/ABI/Pendle/ActionAddRemoveLiqV3.json", "utf8"),
+);
+const PendleBoosterSidechain = JSON.parse(
+  readFileSync("./utils/ABI/Pendle/PendleBoosterSidechain.json", "utf8"),
+);
+const EqbMinterSidechain = JSON.parse(
+  readFileSync("./utils/ABI/Pendle/EqbMinterSidechain.json", "utf8"),
+);
+const BaseRewardPool = JSON.parse(
+  readFileSync("./utils/ABI/Pendle/BaseRewardPool.json", "utf8"),
+);
+const XEqbToken = JSON.parse(
+  readFileSync("./utils/ABI/Equilibria/XEqbToken.json", "utf8"),
+);
+const EqbZap = JSON.parse(
+  readFileSync("./utils/ABI/Equilibria/EqbZap.json", "utf8"),
+);
 import axios from "axios";
 import { ethers } from "ethers";
 import { PROVIDER } from "../../../../utils/general.js";
@@ -13,8 +27,8 @@ import axiosRetry from "axios-retry";
 import { getContract, prepareContractCall } from "thirdweb";
 import THIRDWEB_CLIENT from "../../../../utils/thirdweb.js";
 import { approve, CHAIN_ID_TO_CHAIN } from "../../../../utils/general.js";
-import BaseProtocol from "../BaseProtocol.js";  
-const ERC20_ABI = JSON.parse(readFileSync('./utils/ABI/ERC20.json', 'utf8'));
+import BaseProtocol from "../BaseProtocol.js";
+const ERC20_ABI = JSON.parse(readFileSync("./utils/ABI/ERC20.json", "utf8"));
 
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
 export class BaseEquilibria extends BaseProtocol {

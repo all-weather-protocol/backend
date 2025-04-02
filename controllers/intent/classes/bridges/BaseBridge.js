@@ -47,7 +47,7 @@ class BaseBridge {
     toToken,
     amount,
     updateProgress,
-  ){
+  ) {
     // Implementation
     throw new Error("Method 'customBridgeTxn()' must be implemented.");
   }

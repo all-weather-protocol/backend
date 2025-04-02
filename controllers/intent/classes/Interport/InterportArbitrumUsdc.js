@@ -1,5 +1,5 @@
-import Vault from "../../lib/contracts/Interport/Vault.json" ;
-import StablecoinFarm from "../../lib/contracts/Interport/StablecoinFarm.json" ;
+import Vault from "../../lib/contracts/Interport/Vault.json";
+import StablecoinFarm from "../../lib/contracts/Interport/StablecoinFarm.json";
 import axios from "axios";
 import { ethers } from "ethers";
 import { PROVIDER } from "../../utils/general.js";

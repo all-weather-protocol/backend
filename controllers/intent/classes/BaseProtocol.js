@@ -1,8 +1,13 @@
-import { readFileSync } from 'fs';
-import { CHAIN_ID_TO_CHAIN, PROVIDER, NULL_ADDRESS } from "../../../utils/general.js";
-const ERC20_ABI = JSON.parse(readFileSync('./utils/ABI/ERC20.json', 'utf8'));
+import { readFileSync } from "fs";
+import {
+  CHAIN_ID_TO_CHAIN,
+  PROVIDER,
+  NULL_ADDRESS,
+} from "../../../utils/general.js";
+const ERC20_ABI = JSON.parse(readFileSync("./utils/ABI/ERC20.json", "utf8"));
 import BaseUniswap from "./uniswapv3/BaseUniswap.js";
 import assert from "assert";
+import { ethers } from "ethers";
 import THIRDWEB_CLIENT from "../../../utils/thirdweb.js";
 import { prepareContractCall, getContract } from "thirdweb";
 import swap from "../../../utils/swapHelper.js";

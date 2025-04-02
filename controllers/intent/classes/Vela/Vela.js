@@ -1,7 +1,9 @@
-import { readFileSync } from 'fs';
-const Vault = JSON.parse(readFileSync('./utils/ABI/Vela/Vault.json', 'utf8'));
-const TokenFarm = JSON.parse(readFileSync('./utils/ABI/Vela/TokenFarm.json', 'utf8'));
-const ERC20_ABI = JSON.parse(readFileSync('./utils/ABI/ERC20.json', 'utf8'));
+import { readFileSync } from "fs";
+const Vault = JSON.parse(readFileSync("./utils/ABI/Vela/Vault.json", "utf8"));
+const TokenFarm = JSON.parse(
+  readFileSync("./utils/ABI/Vela/TokenFarm.json", "utf8"),
+);
+const ERC20_ABI = JSON.parse(readFileSync("./utils/ABI/ERC20.json", "utf8"));
 import axios from "axios";
 import { ethers } from "ethers";
 import { PROVIDER } from "../../../../utils/general.js";

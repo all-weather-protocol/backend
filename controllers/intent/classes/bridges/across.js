@@ -5,10 +5,12 @@ import BaseBridge from "./BaseBridge.js";
 import { prepareContractCall } from "thirdweb";
 import THIRDWEB_CLIENT from "../../../../utils/thirdweb.js";
 import { CHAIN_ID_TO_CHAIN, PROVIDER } from "../../../../utils/general.js";
-const SpokePool = JSON.parse(readFileSync('./utils/ABI/Across/SpokePool.json', 'utf8'));
+const SpokePool = JSON.parse(
+  readFileSync("./utils/ABI/Across/SpokePool.json", "utf8"),
+);
 import { getContract } from "thirdweb";
 import { ethers } from "ethers";
-const ERC20 = JSON.parse(readFileSync('./utils/ABI/ERC20.json', 'utf8'));
+const ERC20 = JSON.parse(readFileSync("./utils/ABI/ERC20.json", "utf8"));
 class AcrossBridge extends BaseBridge {
   static spokePoolMapping = {
     arbitrum: "0xe35e9842fceaCA96570B734083f4a58e8F7C5f2A",

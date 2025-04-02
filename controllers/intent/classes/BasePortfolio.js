@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFileSync } from "fs";
 import { tokensAndCoinmarketcapIdsFromDropdownOptions } from "../../../utils/contractInteractions.js";
 import assert from "assert";
 import { oneInchAddress } from "../../../utils/oneInch.js";
@@ -7,14 +7,17 @@ import { ethers } from "ethers";
 import { getContract, prepareContractCall } from "thirdweb";
 import THIRDWEB_CLIENT from "../../../utils/thirdweb.js";
 import getTheBestBridge from "./bridges/bridgeFactory.js";
-import { CHAIN_TO_CHAIN_ID, TOKEN_ADDRESS_MAP } from "../../../utils/general.js";
+import {
+  CHAIN_TO_CHAIN_ID,
+  TOKEN_ADDRESS_MAP,
+} from "../../../utils/general.js";
 import { toWei } from "thirdweb/utils";
 import { TokenPriceBatcher, PriceService } from "./TokenPriceService.js";
 import swap from "../../../utils/swapHelper.js";
 import { PortfolioFlowChartBuilder } from "./PortfolioFlowChartBuilder.js";
 
-const WETH = JSON.parse(readFileSync('./utils/ABI/Weth.json', 'utf8'));
-const ERC20_ABI = JSON.parse(readFileSync('./utils/ABI/ERC20.json', 'utf8'));
+const WETH = JSON.parse(readFileSync("./utils/ABI/Weth.json", "utf8"));
+const ERC20_ABI = JSON.parse(readFileSync("./utils/ABI/ERC20.json", "utf8"));
 const PROTOCOL_TREASURY_ADDRESS = "0x2eCBC6f229feD06044CDb0dD772437a30190CD50";
 const REWARD_SLIPPAGE = 0.8;
 
@@ -382,23 +385,7 @@ export class BasePortfolio {
 
   async portfolioAction(actionName, actionParams) {
     const updateProgress = async (nodeID, tradingLoss) => {
-      // Update stepName first and wait for it to complete
-      await new Promise((resolve) => {
-        actionParams.setStepName((prevStepName) => {
-          resolve();
-          return nodeID;
-        });
-      });
-
-      // Then update the other states
-      actionParams.setTradingLoss(tradingLoss);
-      if (isNaN(tradingLoss)) {
-        console.error(`${nodeID}: tradingLoss is not a number: ${tradingLoss}`);
-      } else {
-        actionParams.setTotalTradingLoss(
-          (prevTotalTradingLoss) => prevTotalTradingLoss + tradingLoss,
-        );
-      }
+      // WIP
     };
     const tokenPricesMappingTable = await this.getTokenPricesMappingTable();
     actionParams.tokenPricesMappingTable = tokenPricesMappingTable;
@@ -498,10 +485,13 @@ export class BasePortfolio {
   }
 
   async _processProtocolActions(actionName, actionParams) {
-    const currentChain = actionParams.chainMetadata.name
-      .toLowerCase()
-      .replace(" one", "")
-      .replace(" mainnet", "");
+    const currentChain =
+      typeof actionParams.chainMetadata === "string"
+        ? actionParams.chainMetadata
+        : actionParams.chainMetadata.name
+            .toLowerCase()
+            .replace(" one", "")
+            .replace(" mainnet", "");
 
     const actionHandlers = {
       zapIn: async (protocol, chain, derivative) => {

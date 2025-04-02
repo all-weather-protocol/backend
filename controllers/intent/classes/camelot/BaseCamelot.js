@@ -1,11 +1,23 @@
-import { readFileSync } from 'fs';
+import { readFileSync } from "fs";
 import { ethers } from "ethers";
-const ERC20_ABI = JSON.parse(readFileSync('./utils/ABI/ERC20.json', 'utf8'));
-const CamelotNFTPositionManager = JSON.parse(readFileSync('./utils/ABI/CamelotNFTPositionManager.json', 'utf8'));  
-const AlgebraPool = JSON.parse(readFileSync('./utils/ABI/Camelot/AlgebraPool.json', 'utf8'));
-const Distributor = JSON.parse(readFileSync('./utils/ABI/Camelot/Distributor.json', 'utf8'));
-const XGrailToken = JSON.parse(readFileSync('./utils/ABI/Camelot/XGrailToken.json', 'utf8'));
-import { approve, PROVIDER } from "../../../../utils/general.js";
+const ERC20_ABI = JSON.parse(readFileSync("./utils/ABI/ERC20.json", "utf8"));
+const CamelotNFTPositionManager = JSON.parse(
+  readFileSync("./utils/ABI/CamelotNFTPositionManager.json", "utf8"),
+);
+const AlgebraPool = JSON.parse(
+  readFileSync("./utils/ABI/Camelot/AlgebraPool.json", "utf8"),
+);
+const Distributor = JSON.parse(
+  readFileSync("./utils/ABI/Camelot/Distributor.json", "utf8"),
+);
+const XGrailToken = JSON.parse(
+  readFileSync("./utils/ABI/Camelot/XGrailToken.json", "utf8"),
+);
+import {
+  approve,
+  PROVIDER,
+  CHAIN_ID_TO_CHAIN,
+} from "../../../../utils/general.js";
 import { getContract, prepareContractCall } from "thirdweb";
 import THIRDWEB_CLIENT from "../../../../utils/thirdweb.js";
 import BaseProtocol from "../BaseProtocol.js";

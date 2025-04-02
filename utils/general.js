@@ -1,7 +1,7 @@
-import { readFileSync } from 'fs';
+import { readFileSync } from "fs";
 import { ethers } from "ethers";
 import { arbitrum, base, optimism, bsc, polygon } from "thirdweb/chains";
-const ERC20_ABI = JSON.parse(readFileSync('./utils/ABI/ERC20.json', 'utf8'));
+const ERC20_ABI = JSON.parse(readFileSync("./utils/ABI/ERC20.json", "utf8"));
 import { prepareContractCall, getContract, defineChain } from "thirdweb";
 import THIRDWEB_CLIENT from "./thirdweb.js";
 export const CHAIN_ID_TO_CHAIN = {
@@ -229,8 +229,8 @@ export const castStringToDate = (dateStr) => {
     const day = parseInt(dateMatch[2]);
     const date = new Date(year, month, day);
     // Format the Date object as 'YYYY-MM-DD'
-      return date.toISOString().split("T")[0];
-    } else {
-      throw new Error("Invalid date string");
-    }
-  };
+    return date.toISOString().split("T")[0];
+  } else {
+    throw new Error("Invalid date string");
+  }
+};

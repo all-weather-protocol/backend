@@ -1,7 +1,13 @@
-import { readFileSync } from 'fs';
-const Router = JSON.parse(readFileSync('./utils/ABI/Aerodrome/Router.json', 'utf8'));
-const Guage = JSON.parse(readFileSync('./utils/ABI/Aerodrome/Guage.json', 'utf8'));
-const Pool = JSON.parse(readFileSync('./utils/ABI/Aerodrome/Pool.json', 'utf8'));
+import { readFileSync } from "fs";
+const Router = JSON.parse(
+  readFileSync("./utils/ABI/Aerodrome/Router.json", "utf8"),
+);
+const Guage = JSON.parse(
+  readFileSync("./utils/ABI/Aerodrome/Guage.json", "utf8"),
+);
+const Pool = JSON.parse(
+  readFileSync("./utils/ABI/Aerodrome/Pool.json", "utf8"),
+);
 import axios from "axios";
 import { ethers } from "ethers";
 import { PROVIDER } from "../../../../utils/general.js";
@@ -10,7 +16,7 @@ import { getContract, prepareContractCall } from "thirdweb";
 import THIRDWEB_CLIENT from "../../../../utils/thirdweb.js";
 import BaseProtocol from "../BaseProtocol.js";
 import { approve, CHAIN_ID_TO_CHAIN } from "../../../../utils/general.js";
-const ERC20_ABI = JSON.parse(readFileSync('./utils/ABI/ERC20.json', 'utf8'));
+const ERC20_ABI = JSON.parse(readFileSync("./utils/ABI/ERC20.json", "utf8"));
 
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
 export class BaseVelodrome extends BaseProtocol {

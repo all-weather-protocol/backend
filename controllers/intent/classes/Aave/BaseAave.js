@@ -1,6 +1,8 @@
-import { readFileSync } from 'fs';
-const AToken = JSON.parse(readFileSync('./utils/ABI/Aave/Atoken.json', 'utf8'));
-const L2PoolInstance = JSON.parse(readFileSync('./utils/ABI/Aave/L2PoolInstance.json', 'utf8'));
+import { readFileSync } from "fs";
+const AToken = JSON.parse(readFileSync("./utils/ABI/Aave/Atoken.json", "utf8"));
+const L2PoolInstance = JSON.parse(
+  readFileSync("./utils/ABI/Aave/L2PoolInstance.json", "utf8"),
+);
 import { base } from "thirdweb/chains";
 import axios from "axios";
 import { ethers } from "ethers";

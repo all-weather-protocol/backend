@@ -10,9 +10,7 @@ import { CamelotVault } from "./classes/Vaults/Tests/CamelotVault.js";
 import { AerodromeVault } from "./classes/Vaults/Tests/AerodromeVault.js";
 import { VenusStablecoinVault } from "./classes/Vaults/Tests/VenusVault.js";
 import { DeprecatedVault } from "./classes/Vaults/DeprecatedVault.js";
-export function getPortfolioHelper(
-  portfolioName,
-) {
+export function getPortfolioHelper(portfolioName) {
   let portfolioHelper;
   if (portfolioName === "Stable+ Vault") {
     portfolioHelper = new StablecoinVault();
