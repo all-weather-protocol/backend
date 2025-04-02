@@ -18,9 +18,10 @@ const {
   fetchBalancesHistory,
   insertBalance,
 } = require("./controllers/userBalances");
-const { castStringToDate } = require("./utils");
+const { castStringToDate } = require("./utils/general");
 const { sendPnLReport } = require("./controllers/reportSender");
-
+const { generateIntentTxns } = require("./controllers/intent/generateIntentTxns");
+const { getPortfolioHelper } = require("./controllers/intent/portfolioHelper");
 config();
 require("events").EventEmitter.defaultMaxListeners = 20; // or another number that suits your needs
 const app = express();
@@ -179,6 +180,11 @@ app.post("/discord/webhook", async (req, res) => {
 });
 app.post("/reports/weekly-pnl", async (req, res) => {
   return await sendPnLReport(req, res);
+});
+app.post("/generate-intent-txns", async (req, res) => {
+  const portfolioHelper = getPortfolioHelper(req.body.portfolioName);
+  const txns = await generateIntentTxns(req, res, portfolioHelper);
+  res.json(txns)
 });
 // Start the server
 app.listen(port, () => {

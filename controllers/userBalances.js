@@ -3,7 +3,7 @@ const { JWT } = require("google-auth-library");
 const PublicGoogleSheetsParser = require("public-google-sheets-parser");
 const { GOOGLE_SERVICE_ACCOUNT } = require("../config");
 const SPREADSHEET_ID = "1ccCvnPfN-COcIpljie65dQddFP5HCsdJV66YnZdZ-2o";
-const { castStringToDate } = require("../utils");
+const { castStringToDate } = require("../utils/general");
 const fetch = require("node-fetch");
 
 async function insertBalance(address, res) {
