@@ -1,9 +1,9 @@
-const portfolioCacheService = require('../services/portfolioCache');
+const portfolioCacheService = require("../services/portfolioCache");
 
 const storeCache = async (req, res) => {
   try {
     const { key, data, timestamp } = req.body;
-    
+
     if (!key || !data) {
       return res.status(400).json({ error: "Key and data are required" });
     }
@@ -19,7 +19,7 @@ const storeCache = async (req, res) => {
 const getCache = async (req, res) => {
   try {
     const { key } = req.params;
-    
+
     if (!key) {
       return res.status(400).json({ error: "Key is required" });
     }
@@ -34,5 +34,5 @@ const getCache = async (req, res) => {
 
 module.exports = {
   storeCache,
-  getCache
-}; 
+  getCache,
+};

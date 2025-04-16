@@ -6,15 +6,17 @@ const cacheFolder = "portfolio-cache";
 
 const storeCache = async (key, data, timestamp) => {
   const fileName = `${cacheFolder}/${key}-${timestamp}.json`;
-  await storage.bucket(bucketName).file(fileName).save(JSON.stringify({
-    data,
-    timestamp
-  }));
+  await storage.bucket(bucketName).file(fileName).save(
+    JSON.stringify({
+      data,
+      timestamp,
+    }),
+  );
 };
 
 const getCache = async (key) => {
   const [files] = await storage.bucket(bucketName).getFiles({
-    prefix: `${cacheFolder}/${key}-`
+    prefix: `${cacheFolder}/${key}-`,
   });
 
   if (files.length === 0) {
@@ -22,8 +24,12 @@ const getCache = async (key) => {
   }
 
   const mostRecentFile = files.reduce((latest, current) => {
-    const currentTimestamp = parseInt(current.name.split('-').pop().replace('.json', ''));
-    const latestTimestamp = parseInt(latest.name.split('-').pop().replace('.json', ''));
+    const currentTimestamp = parseInt(
+      current.name.split("-").pop().replace(".json", ""),
+    );
+    const latestTimestamp = parseInt(
+      latest.name.split("-").pop().replace(".json", ""),
+    );
     return currentTimestamp > latestTimestamp ? current : latest;
   });
 
@@ -33,5 +39,5 @@ const getCache = async (key) => {
 
 module.exports = {
   storeCache,
-  getCache
-}; 
+  getCache,
+};

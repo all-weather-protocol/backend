@@ -22,7 +22,7 @@ const { castStringToDate } = require("./utils");
 const { sendPnLReport } = require("./controllers/reportSender");
 
 // Import routes
-const portfolioCacheRoutes = require('./routes/portfolioCache');
+const portfolioCacheRoutes = require("./routes/portfolioCache");
 
 config();
 require("events").EventEmitter.defaultMaxListeners = 20; // or another number that suits your needs
@@ -33,11 +33,11 @@ app.use(cors());
 const port = 3002;
 
 // Increase payload size limit to 10MB
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Use routes
-app.use('/portfolio-cache', portfolioCacheRoutes);
+app.use("/portfolio-cache", portfolioCacheRoutes);
 
 // Initialize Google Cloud Storage
 const storage = new Storage({ keyFilename: process.env.GOOGLE_SERVICE });
@@ -158,7 +158,7 @@ app.post("/balances/:address", async (req, res) => {
 
 let fetch;
 (async () => {
-  fetch = (await import('node-fetch')).default;
+  fetch = (await import("node-fetch")).default;
 })();
 
 app.post("/discord/webhook", async (req, res) => {
@@ -196,19 +196,21 @@ app.post("/reports/weekly-pnl", async (req, res) => {
 app.post("/portfolio-cache", async (req, res) => {
   try {
     const { key, data, timestamp } = req.body;
-    
+
     if (!key || !data) {
       return res.status(400).json({ error: "Key and data are required" });
     }
 
     // Create a unique filename using the key and timestamp
     const fileName = `${cacheFolder}/${key}-${timestamp}.json`;
-    
+
     // Upload the data to Google Cloud Storage
-    await storage.bucket(bucketName).file(fileName).save(JSON.stringify({
-      data,
-      timestamp
-    }));
+    await storage.bucket(bucketName).file(fileName).save(
+      JSON.stringify({
+        data,
+        timestamp,
+      }),
+    );
 
     res.status(200).json({ message: "Cache stored successfully" });
   } catch (error) {
@@ -220,14 +222,14 @@ app.post("/portfolio-cache", async (req, res) => {
 app.get("/portfolio-cache/:key", async (req, res) => {
   try {
     const { key } = req.params;
-    
+
     if (!key) {
       return res.status(400).json({ error: "Key is required" });
     }
 
     // List all files in the cache folder for this key
     const [files] = await storage.bucket(bucketName).getFiles({
-      prefix: `${cacheFolder}/${key}-`
+      prefix: `${cacheFolder}/${key}-`,
     });
 
     if (files.length === 0) {
@@ -236,8 +238,12 @@ app.get("/portfolio-cache/:key", async (req, res) => {
 
     // Get the most recent file
     const mostRecentFile = files.reduce((latest, current) => {
-      const currentTimestamp = parseInt(current.name.split('-').pop().replace('.json', ''));
-      const latestTimestamp = parseInt(latest.name.split('-').pop().replace('.json', ''));
+      const currentTimestamp = parseInt(
+        current.name.split("-").pop().replace(".json", ""),
+      );
+      const latestTimestamp = parseInt(
+        latest.name.split("-").pop().replace(".json", ""),
+      );
       return currentTimestamp > latestTimestamp ? current : latest;
     });
 
