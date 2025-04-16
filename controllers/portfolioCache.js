@@ -25,6 +25,9 @@ const getCache = async (req, res) => {
     }
 
     const cacheData = await portfolioCacheService.getCache(key);
+    if (!cacheData) {
+      return res.status(404).json({ error: "Cache not found" });
+    }
     res.status(200).json(cacheData);
   } catch (error) {
     console.error("Error retrieving portfolio cache:", error);

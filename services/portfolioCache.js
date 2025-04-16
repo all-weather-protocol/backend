@@ -20,7 +20,7 @@ const getCache = async (key) => {
   });
 
   if (files.length === 0) {
-    throw new Error("Cache not found");
+    return null;
   }
 
   const mostRecentFile = files.reduce((latest, current) => {
