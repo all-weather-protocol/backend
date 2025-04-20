@@ -5,7 +5,7 @@ const bucketName = "all-weather-portfolio";
 const cacheFolder = "portfolio-cache";
 
 const storeCache = async (key, data, timestamp) => {
-  const fileName = `${cacheFolder}/${key}-${timestamp}.json`;
+  const fileName = `${cacheFolder}/${key}.json`;
   await storage.bucket(bucketName).file(fileName).save(
     JSON.stringify({
       data,
@@ -15,29 +15,34 @@ const storeCache = async (key, data, timestamp) => {
 };
 
 const getCache = async (key) => {
-  const [files] = await storage.bucket(bucketName).getFiles({
-    prefix: `${cacheFolder}/${key}-`,
-  });
-
-  if (files.length === 0) {
-    return null;
+  const fileName = `${cacheFolder}/${key}.json`;
+  try {
+    const [content] = await storage
+      .bucket(bucketName)
+      .file(fileName)
+      .download();
+    return JSON.parse(content);
+  } catch (error) {
+    // If file doesn't exist, return null
+    if (error.code === 404) {
+      return null;
+    }
+    throw error;
   }
+};
 
-  const mostRecentFile = files.reduce((latest, current) => {
-    const currentTimestamp = parseInt(
-      current.name.split("-").pop().replace(".json", ""),
-    );
-    const latestTimestamp = parseInt(
-      latest.name.split("-").pop().replace(".json", ""),
-    );
-    return currentTimestamp > latestTimestamp ? current : latest;
+const deleteCache = async (key) => {
+  const [files] = await storage.bucket(bucketName).getFiles({
+    prefix: `${cacheFolder}/${key}`,
   });
 
-  const [content] = await mostRecentFile.download();
-  return JSON.parse(content);
+  for (const file of files) {
+    await storage.bucket(bucketName).file(file.name).delete();
+  }
 };
 
 module.exports = {
   storeCache,
   getCache,
+  deleteCache,
 };

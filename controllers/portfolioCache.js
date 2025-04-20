@@ -35,7 +35,20 @@ const getCache = async (req, res) => {
   }
 };
 
+const deleteCache = async (req, res) => {
+  try {
+    const { key } = req.params;
+
+    await portfolioCacheService.deleteCache(key);
+    res.status(200).json({ message: "Cache deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting portfolio cache:", error);
+    res.status(500).json({ error: "Failed to delete portfolio cache" });
+  }
+};
+
 module.exports = {
   storeCache,
   getCache,
+  deleteCache,
 };
