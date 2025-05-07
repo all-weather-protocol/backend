@@ -3,7 +3,7 @@ const { promisify } = require("util");
 const PublicGoogleSheetsParser = require("public-google-sheets-parser");
 const ChartGenerator = require("../utils/ChartGenerator");
 const fs = require("fs");
-
+const minDataPointsThreshold = 7;
 // Date utilities
 class DateUtils {
   static extractDate(dateStr) {
@@ -172,6 +172,10 @@ class ReportController {
     );
     if (addressRows.length === 0) {
       throw new Error("No data found for this address");
+    }
+    
+    if (addressRows.length < minDataPointsThreshold) {
+      throw new Error("Insufficient data points. Need at least 7 data points to generate a report.");
     }
 
     return addressRows.sort((a, b) => {
