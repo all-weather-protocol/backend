@@ -173,9 +173,11 @@ class ReportController {
     if (addressRows.length === 0) {
       throw new Error("No data found for this address");
     }
-    
+
     if (addressRows.length < minDataPointsThreshold) {
-      throw new Error("Insufficient data points. Need at least 7 data points to generate a report.");
+      throw new Error(
+        "Insufficient data points. Need at least 7 data points to generate a report.",
+      );
     }
 
     return addressRows.sort((a, b) => {
