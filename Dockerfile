@@ -17,4 +17,6 @@ COPY . .
 EXPOSE 3000
 
 # Run the application
+# Setup ENTRYPOINT
+ENTRYPOINT ["./entrypoint.sh"]
 CMD [ "yarn", "start" ]
