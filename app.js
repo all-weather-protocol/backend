@@ -78,25 +78,48 @@ app.get("/rewards/historical-data", async (req, res) => {
   res.json(newData);
 });
 
+async function fetchAndUploadProtocols(storage, bucketName, fileName) {
+  try {
+    const response = await fetch('https://api.llama.fi/protocols');
+    const protocols = await response.json();
+    
+    // Upload to GCS
+    const bucket = storage.bucket(bucketName);
+    const file = bucket.file(fileName);
+    await file.save(JSON.stringify(protocols));
+    
+    return protocols;
+  } catch (error) {
+    console.error('Error fetching/uploading protocols:', error);
+    throw error;
+  }
+}
+
 app.get("/protocols", async (req, res) => {
   const storage = new Storage({ keyFilename: process.env.GOOGLE_SERVICE });
   const bucketName = "all-weather-portfolio";
   const fileName = "protocols.json";
 
-  const metadata = await new Promise((resolve, reject) => {
-    storage
-      .bucket(bucketName)
-      .file(fileName)
-      .download((err, contents) => {
-        if (err) {
-          console.error("Error:", err);
-          reject(err);
-        } else {
-          resolve(contents.toString());
-        }
-      });
-  });
-  res.json(metadata);
+  try {
+    const bucket = storage.bucket(bucketName);
+    const file = bucket.file(fileName);
+    
+    // Check if file exists
+    const [exists] = await file.exists();
+    
+    if (!exists) {
+      // If file doesn't exist, fetch and upload it
+      const protocols = await fetchAndUploadProtocols(storage, bucketName, fileName);
+      return res.json(protocols);
+    }
+
+    // If file exists, download and return it
+    const [contents] = await file.download();
+    res.json(JSON.parse(contents.toString()));
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Failed to fetch protocols" });
+  }
 });
 
 app.post("/subscriptions/email", async (req, res) => {

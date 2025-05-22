@@ -19,5 +19,5 @@ primary_region = 'hkg'
 [[vm]]
   cpu_kind = 'shared'
   cpus = 1
-  memory_mb = 256
-  memory = '256mb'
+  memory_mb = 500
+  memory = '500mb'
