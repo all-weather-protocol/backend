@@ -3,7 +3,7 @@ const { promisify } = require("util");
 const PublicGoogleSheetsParser = require("public-google-sheets-parser");
 const ChartGenerator = require("../utils/ChartGenerator");
 const fs = require("fs");
-const minDataPointsThreshold = 7;
+const minDataPointsThreshold = 9;
 // Date utilities
 class DateUtils {
   static extractDate(dateStr) {
